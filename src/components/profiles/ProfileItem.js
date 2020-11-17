@@ -1,6 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import PropTypes from 'prop-types'
+import PropTypes from 'prop-types';
+import Toggle from 'react-toggle'
+import "react-toggle/style.css";
+import TableBody from '@material-ui/core/TableBody';
+import TableRow from '@material-ui/core/TableRow';
+import TableCell from '@material-ui/core/TableCell';
+import axios from 'axios';
+import {
+  API_URL
+} from "../../actions/types";
 
 const ProfileItem = ({ profile: {
   id,
@@ -12,29 +21,46 @@ const ProfileItem = ({ profile: {
   is_active
 } 
 }) => {
+  const updateStatus = async (id,{currentTarget:{checked}}) => {
+    try{
+      const userStatus = await axios.put(API_URL + `/v1/backend/users/toggle/${id}`, {
+        is_active: checked,
+      });
+
+      console.log(userStatus);
+
+    } catch (e) {
+
+    }
+  }
   return (
-    <div className="profile bg-light">
-      <img src={img_path} alt="User" className="round-img"></img>
-      <div>
-        <h2>
-          {first_name + ' ' + last_name }
-        </h2>
-        <p>Email: {email} </p>
-        <p>Username: {username} </p>
-        <p>Account Status: {is_active ? 'ACTIVE' : 'INACTIVE'} </p>
-        {/* <p className="my-1">{location && <span>{location}</span>}</p> */}
-        <Link to={`/profile/${id}`} className="btn btn-primary">
-          View Profile
-        </Link>
-      </div>
-      {/* <ul>
-        {skills.slice(0, 4).map((skill, index) => (
-          <li key={index} className="text-primary">
-            <i className="fas fa-check"></i> {skill}
-          </li>
-        ))}
-      </ul> */}
-    </div>
+        <TableRow key={id}>
+                      
+        <TableCell style={{ width: 50 }} component="th" scope="row" align="center"> 
+          {id}
+        </TableCell>
+        <TableCell style={{ width: 160 }} align="center">
+          {first_name}
+        </TableCell>
+        <TableCell style={{ width: 160 }} align="center">
+          {last_name}
+        </TableCell>
+        <TableCell style={{ width: 160 }} align="center">
+          {email}
+        </TableCell>
+        <TableCell style={{ width: 160 }} align="center">
+          {username}
+        </TableCell>
+        <TableCell style={{ width: 160 }} align="center">
+        <img src={img_path} alt="User" className="round-img"></img>
+        </TableCell>
+        <TableCell style={{ width: 160 }} align="center">
+        <Toggle
+          defaultChecked={is_active}
+          className='toggle-color'
+          onChange={e=>{updateStatus(id,e)}} /> 
+        </TableCell>
+      </TableRow>
   )
 }
 
